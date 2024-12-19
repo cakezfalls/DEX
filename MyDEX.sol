@@ -75,4 +75,25 @@ contract DEX {
         reserveCake -= finalAmount;
         reserveEth += msg.value;
     }
+
+    function removeLiquidity(uint _mylpToken) public payable {
+        require(_mylptoken > 0, "Wrong amount");
+        require(LpBalances[msg.sender] >= _mylpToken, "Wrong amount");
+
+        uint userPart;
+        uint giveCake;
+        uint giveEth;
+
+        userPart = _mylpToken / totalLiquidity;
+        giveCake = reserveCAKE * userPart;
+        giveEth = reserveEth * userPart;
+
+        reserveCAKE -= giveCake;
+        reserveEth -= giveEth;
+        totalLiquidity -= _mylpToken;
+        LpBalances[msg.sender] -= _mylpToken;
+
+        token.transfer(msg.sender, giveCake);
+        payable(msg.sender).transfer(giveEth);
+    }
 }
